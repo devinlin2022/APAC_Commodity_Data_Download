@@ -1,4 +1,5 @@
 pygsheets
+gspread
 google-auth-oauthlib
 pandas
 retrying
