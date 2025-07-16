@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
 
 import pygsheets
 
@@ -48,7 +49,9 @@ def fetch_data(link):
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Chrome(options=options)
+    CHROMEDRIVER_PATH = os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver") # Default for local testing
+    service = Service(executable_path=CHROMEDRIVER_PATH)
+    driver = webdriver.Chrome(service=service, options=options)
     
     username = os.getenv("ICIS_USERNAME")
     password = os.getenv("ICIS_PASSWORD")
