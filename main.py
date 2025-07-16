@@ -14,14 +14,22 @@ from selenium.webdriver.support import expected_conditions as EC
 import pygsheets
 from google.oauth2 import service_account
 
-# --- GitHub Actions 环境下的认证 ---
-# 从 GitHub Secrets 生成的 service_account.json 文件进行授权
-# pygsheets.DEFAULT_SCOPES 包含了读写 aheets 和 drive 的权限
+# --- GitHub Actions 环境下的认证 (已修正) ---
+
+# 1. 明确定义所需的 API 权限范围
+#    - spreadsheets: 读写 Google Sheets
+#    - drive: 访问 Google Drive (pygsheets 需要此权限来按名称查找电子表格)
+SCOPES = [
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/drive'
+]
+
+# 2. 从 service_account.json 文件和定义的 SCOPES 创建凭证
 try:
     SERVICE_ACCOUNT_FILE = 'service_account.json'
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE,
-        scopes=pygsheets.DEFAULT_SCOPES
+        scopes=SCOPES  # 使用我们刚刚定义的 SCOPES
     )
 except FileNotFoundError:
     print("错误：'service_account.json' 未找到。请确保 GitHub Actions 工作流正确生成了此文件。")
@@ -30,6 +38,9 @@ except Exception as e:
     print(f"加载凭证时发生错误: {e}")
     creds = None
 
+# --- GitHub Actions 环境下的认证 ---
+# 从 GitHub Secrets 生成的 service_account.json 文件进行授权
+# pygsheets.DEFAULT_SCOPES 包含了读写 aheets 和 drive 的权限
 
 def save_pdf(driver, path):
     """保存当前页面为 PDF，用于调试。"""
