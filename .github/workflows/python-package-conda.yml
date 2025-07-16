@@ -1,0 +1,56 @@
+# .github/workflows/scrape_data.yml
+
+name: Daily Commodity Scraper
+
+on:
+  workflow_dispatch: # 允许手动触发
+  schedule:
+    - cron: '0 22 * * *' # 每天 22:00 UTC (香港时间 早上 6:00) 运行
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest # 使用最新的 Ubuntu 运行环境
+    
+    # 将 GitHub Secrets 设置为环境变量，供 Python 脚本使用
+    env:
+      ICIS_USERNAME: ${{ secrets.ICIS_USERNAME }}
+      ICIS_PASSWORD: ${{ secrets.ICIS_PASSWORD }}
+
+    steps:
+      # 步骤1：检出你的代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 步骤2：设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # 你可以指定需要的 Python 版本
+
+      # 步骤3：安装 Chrome 浏览器
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
+
+      # 步骤4：安装 Python 依赖库
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 步骤5：从 Secret 创建 Google Service Account 文件
+      # 这是关键一步，将存储在 Secret 中的 JSON 字符串写入到文件中
+      - name: Create Google Service Account JSON file
+        run: echo "${{ secrets.GCP_SA_KEY }}" > service_account.json
+        shell: bash
+
+      # 步骤6：运行 Python 脚本
+      - name: Run Python Scraper
+        run: python main.py
+
+      # 步骤7：上传调试用的 PDF (如果存在)
+      - name: Upload error page artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webpage-error-pdf
+          path: webpage_error.pdf
+          if-no-files-found: ignore # 如果文件不存在，则忽略此步骤
