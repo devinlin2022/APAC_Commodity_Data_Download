@@ -40,7 +40,7 @@ jobs:
       # 步骤5：从 Secret 创建 Google Service Account 文件
       # 这是关键一步，将存储在 Secret 中的 JSON 字符串写入到文件中
       - name: Create Google Service Account JSON file
-        run: echo "${{ secrets.GCP_SA_KEY }}" > service_account.json
+        run: echo "${{ secrets.GCP_SA_KEY }}" > service_account_key.json
         shell: bash
 
       # 步骤6：运行 Python 脚本
