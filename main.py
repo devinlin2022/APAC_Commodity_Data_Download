@@ -2,7 +2,6 @@ import os
 import time
 import base64
 import pandas as pd
-from retrying import retry
 from datetime import datetime
 
 from selenium import webdriver
