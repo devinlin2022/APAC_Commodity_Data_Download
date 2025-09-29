@@ -41,7 +41,7 @@ def save_pdf(driver, path):
         f.write(pdf_data)
     print("✅ PDF saved.")
 
-@retry(stop_max_attempt_number=3, wait_fixed=5000)
+
 def fetch_data(link):
     """使用 Selenium 抓取数据"""
     print(f"➡️ Fetching data from: {link}")
