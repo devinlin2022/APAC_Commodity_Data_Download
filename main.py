@@ -59,14 +59,17 @@ def fetch_data(link):
     try:
         driver.implicitly_wait(10)
         driver.get(link)
-
-        wait = WebDriverWait(driver, 60)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#login-button')))
-
-        driver.execute_script(f'document.querySelector("#username-input").value = "{username}"')
+    
+        wait = WebDriverWait(driver, 80)
+        
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[name="action"]._button-login-id')))
+        print("Found Next Step Button!")
+        driver.execute_script('document.querySelector("#username").value ="{username}"')
+        driver.execute_script('document.querySelector("button._button-login-id").click()')
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[name="action"]._button-login-password')))
         driver.execute_script(f'document.querySelector("#password-input").value = "{password}"')
-        driver.execute_script(f'document.querySelector("#login-button").click()')
-        print("🔐 Login submitted.")
+        driver.execute_script('document.querySelector("button._button-login-password").click()')
+        print("Click Login in Button")
         
         try:
             wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#continue-login-button')))
